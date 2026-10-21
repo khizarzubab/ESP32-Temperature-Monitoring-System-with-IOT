@@ -1,4 +1,4 @@
-# ESP32 + DHT22 + Raspberry Pi 
+# ESP32 Temperature Monitoring System with IOT 
 
 This is the exact order to build and test this version of the project: ESP32 with a
 DHT22 sensor, a Raspberry Pi running Mosquitto (MQTT broker) + the website,
