@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Room temperature</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root { --bg:#F3F6F7; --ink:#12242B; --muted:#55686F; --line:#D3DDE1; --ok:#1F9A86; --hot:#C8402B; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0E1A1F; --ink:#E6EEF1; --muted:#93A6AE; --line:#26393F; } }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:system-ui,sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: 24px 16px; }
+  .temp { font-size: 5rem; font-weight: 200; }
+  .hum { color: var(--muted); font-size: 1.2rem; }
+  .status { font-size: .9rem; color: var(--muted); }
+  canvas { margin-top: 24px; }
+</style>
+</head>
+<body>
+<main>
+  <div id="status" class="status">Loading...</div>
+  <div class="temp"><span id="temp">--</span>&deg;C</div>
+  <div class="hum">Humidity: <span id="hum">--</span>%</div>
+  <canvas id="chart" height="200"></canvas>
+</main>
+<script>
+let chart = null;
+async function refresh() {
+  const latest = await (await fetch("/api/latest")).json();
+  if (!latest.empty) {
+    document.getElementById("temp").textContent = latest.temp_c.toFixed(1);
+    document.getElementById("hum").textContent = (latest.humidity ?? "--");
+    document.getElementById("status").textContent = latest.online ? "Online" : "No recent reading";
+  }
+  const hist = await (await fetch("/api/history?hours=24")).json();
+  const labels = hist.points.map(p => new Date(p[0]*1000).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));
+  const temps = hist.points.map(p => p[1]);
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById("chart"), {
+    type: "line",
+    data: { labels, datasets: [{ data: temps, borderColor: "#3B78C4", tension: .3, pointRadius: 0 }] },
+    options: { plugins: { legend: { display:false } } }
+  });
+}
+refresh();
+setInterval(refresh, 60000);
+
+// If this page was opened as a Telegram mini-app (not a normal browser),
+// tell Telegram we're ready and let it use the full screen height.
+if (window.Telegram && window.Telegram.WebApp) {
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+}
+</script>
+</body>
+</html>
