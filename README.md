@@ -1,4 +1,4 @@
-# ESP32 + DHT22 + Raspberry Pi: build order, step by step
+# ESP32 + DHT22 + Raspberry Pi 
 
 This is the exact order to build and test this version of the project: ESP32 with a
 DHT22 sensor, a Raspberry Pi running Mosquitto (MQTT broker) + the website,
@@ -8,7 +8,7 @@ used here is free.
 
 ---
 
-## Step 1 — wire the sensor and run `esp32_dht22_test.ino`
+## Wire the sensor and run `esp32_dht22_test.ino`
 
 **Wiring:**
 ```
@@ -34,7 +34,7 @@ If you see `Failed to read from DHT22 sensor` repeatedly, check the wiring
 
 ---
 
-## Step 2 — install Mosquitto on the Raspberry Pi
+## Install Mosquitto on the Raspberry Pi
 
 On the Pi (via keyboard+screen, or SSH):
 ```
@@ -57,7 +57,7 @@ If terminal 1 prints `test hello`, the broker is working. Stop both with Ctrl+C.
 
 ---
 
-## Step 3 — flash `esp32_dht22_mqtt.ino`
+## Flash `esp32_dht22_mqtt.ino`
 
 Open `firmware/esp32_dht22_mqtt/esp32_dht22_mqtt.ino`. Edit the settings block
 at the top:
@@ -84,7 +84,7 @@ A new JSON line should appear every cycle (every 1 minute, while testing).
 
 ---
 
-## Step 4 — `app.py` + `templates/index.html`: store and show the data
+## Run `app.py` + `templates/index.html`: store and show the data
 
 Copy the whole `pi/` folder onto the Raspberry Pi (USB stick, `scp`, or just
 recreate the files there).
@@ -116,7 +116,7 @@ nohup python3 app.py > app.log 2>&1 &
 
 ---
 
-## Step 5 — Telegram bot (get two values, no file to write)
+## Telegram bot (get two values, no file to write)
 
 1. In Telegram, search for **@BotFather**, send it `/newbot`, follow the
    prompts (pick a name). It replies with a **bot token**, looking like
@@ -138,7 +138,7 @@ nohup python3 app.py > app.log 2>&1 &
 
 ---
 
-## Step 6 — `telegram_report.py`: daily and weekly summaries
+## Run `telegram_report.py`: daily and weekly summaries
 
 Test it by hand first, on the Pi:
 ```
@@ -163,7 +163,7 @@ every Monday.
 
 ---
 
-## Step 7 — Tailscale: access the website and broker from anywhere
+## Tailscale: access the website and broker from anywhere
 
 Install Tailscale on the Pi, your phone, and your laptop, signing into the
 **same account** on all three (free).
